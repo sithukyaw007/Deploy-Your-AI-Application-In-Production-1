@@ -69,7 +69,7 @@ module keyvault 'br/public:avm/res/key-vault/vault:0.12.1' = {
         privateDnsZoneGroup: {
           privateDnsZoneGroupConfigs: [
             {
-              privateDnsZoneResourceId: privateDnsZone.outputs.resourceId
+              privateDnsZoneResourceId: privateDnsZone!.outputs.resourceId
             }
           ]
         }

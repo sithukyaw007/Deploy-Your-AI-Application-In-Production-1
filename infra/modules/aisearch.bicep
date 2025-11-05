@@ -68,7 +68,7 @@ module aiSearch 'br/public:avm/res/search/search-service:0.10.0' = {
           privateDnsZoneGroup: {
             privateDnsZoneGroupConfigs: [
               {
-                privateDnsZoneResourceId: privateDnsZone.outputs.resourceId
+                privateDnsZoneResourceId: privateDnsZone!.outputs.resourceId
               }
             ]
           }

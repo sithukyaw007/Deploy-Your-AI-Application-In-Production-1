@@ -145,7 +145,7 @@ module apimPrivateEndpoint 'br/public:avm/res/network/private-endpoint:0.11.0' =
     privateDnsZoneGroup: {
       privateDnsZoneGroupConfigs: [
         {
-          privateDnsZoneResourceId: apiManagementPrivateDnsZone.outputs.resourceId
+          privateDnsZoneResourceId: apiManagementPrivateDnsZone!.outputs.resourceId
         }
       ]
     }
@@ -165,6 +165,6 @@ module apimPrivateEndpoint 'br/public:avm/res/network/private-endpoint:0.11.0' =
 
 output resourceId string = apiManagementService.outputs.resourceId
 output name string = apiManagementService.outputs.name
-output privateEndpointId string = apimPrivateEndpoint.outputs.resourceId
-output privateEndpointName string = apimPrivateEndpoint.outputs.name
+output privateEndpointId string = networkIsolation ? apimPrivateEndpoint!.outputs.resourceId : ''
+output privateEndpointName string = networkIsolation ? apimPrivateEndpoint!.outputs.name : ''
 

@@ -159,7 +159,7 @@ module logAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0
   }
 }
 
-var logAnalyticsWorkspaceResourceId = useExistingLogAnalytics ? existingLogAnalyticsWorkspace!.id : logAnalyticsWorkspace!.outputs.resourceId
+var logAnalyticsWorkspaceResourceId = useExistingLogAnalytics ? existingLogAnalyticsWorkspace.id : logAnalyticsWorkspace.outputs.resourceId
 
 module applicationInsights 'br/public:avm/res/insights/component:0.6.0' = {
   name: take('${name}-app-insights-deployment', 64)
@@ -188,8 +188,8 @@ module keyvault 'modules/keyvault.bicep' = {
     name: 'kv${name}${resourceToken}'
     location: location
     networkIsolation: networkIsolation
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
     roleAssignments: concat(empty(userObjectId) ? [] : [
       {
@@ -199,7 +199,7 @@ module keyvault 'modules/keyvault.bicep' = {
       }
     ], deploySampleApp ? [
       {
-        principalId: appIdentity!.outputs.principalId
+        principalId: appIdentity.outputs.principalId
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Key Vault Secrets User'
       }
@@ -220,8 +220,8 @@ module containerRegistry 'modules/containerRegistry.bicep' = if (acrEnabled) {
     name: 'cr${name}${resourceToken}'
     location: location
     networkIsolation: networkIsolation
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
     tags: allTags
   }
@@ -233,8 +233,8 @@ module storageAccount 'modules/storageAccount.bicep' = {
     storageName: 'st${sanitizedName}${resourceToken}'
     location: location
     networkIsolation: networkIsolation
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
     roleAssignments: concat(empty(userObjectId) ? [] : [
       {
@@ -250,7 +250,7 @@ module storageAccount 'modules/storageAccount.bicep' = {
       }
     ], searchEnabled ? [
       {
-        principalId: searchEnabled ? aiSearch!.outputs.systemAssignedMIPrincipalId : ''
+        principalId: searchEnabled ? aiSearch.outputs.systemAssignedMIPrincipalId : ''
         principalType: 'ServicePrincipal'
         roleDefinitionIdOrName: 'Storage Blob Data Contributor'
       }
@@ -267,9 +267,9 @@ module cognitiveServices 'modules/cognitive-services/cognitiveServices.bicep' = 
     location: aiDeploymentsLocation
     networkIsolation: networkIsolation
     networkAcls: networkAcls
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
-    principalIds: deploySampleApp ? [appIdentity!.outputs.principalId] : []
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
+    principalIds: deploySampleApp ? [appIdentity.outputs.principalId] : []
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
     aiModelDeployments: [
       for model in [aiEmbeddingModelDeployment, aiGPTModelDeployment]: {
@@ -300,14 +300,14 @@ module cognitiveServices 'modules/cognitive-services/cognitiveServices.bicep' = 
 module project 'modules/ai-foundry-project/aiFoundryProject.bicep' = {
   name: '${name}prj'
   params: {
-    cosmosDBname: cosmosDbEnabled? cosmosDb!.outputs.cosmosDBname : ''
+    cosmosDBname: cosmosDbEnabled? cosmosDb.outputs.cosmosDBname : ''
     cosmosDbEnabled: cosmosDbEnabled
     searchEnabled: searchEnabled
     name: projectName
     location: aiDeploymentsLocation
     storageName: storageAccount.outputs.storageName
     aiServicesName: cognitiveServices.outputs.aiServicesName
-    nameFormatted:  searchEnabled ? aiSearch!.outputs.name : ''
+    nameFormatted:  searchEnabled ? aiSearch.outputs.name : ''
     }
 }
 
@@ -317,8 +317,8 @@ module aiSearch 'modules/aisearch.bicep' = if (searchEnabled) {
     name: 'srch${name}${resourceToken}'
     location: location
     networkIsolation: networkIsolation
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
     roleAssignments: union(empty(userObjectId) ? [] : [
       {
@@ -353,7 +353,7 @@ module virtualMachine './modules/virtualMachine.bicep' = if (networkIsolation)  
     vmName: toLower('vm-${name}-jump')
     vmNicName: toLower('nic-vm-${name}-jump')
     vmSize: vmSize
-    vmSubnetId: network!.outputs.defaultSubnetResourceId
+    vmSubnetId: network.outputs.defaultSubnetResourceId
     storageAccountName: storageAccount.outputs.storageName
     storageAccountResourceGroup: resourceGroup().name
     imagePublisher: 'MicrosoftWindowsDesktop'
@@ -373,7 +373,7 @@ module virtualMachine './modules/virtualMachine.bicep' = if (networkIsolation)  
     workspaceId: logAnalyticsWorkspaceResourceId
     location: location
     tags: allTags
-    dcrLocation: useExistingLogAnalytics ? existingLogAnalyticsWorkspace!.location : logAnalyticsWorkspace!.outputs.location
+    dcrLocation: useExistingLogAnalytics ? existingLogAnalyticsWorkspace.location : logAnalyticsWorkspace.outputs.location
   }
   dependsOn: networkIsolation ? [storageAccount] : []
 }
@@ -388,8 +388,8 @@ module apim 'modules/apim.bicep' = if (apiManagementEnabled) {
     sku: 'Developer'
     networkIsolation: networkIsolation
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
     tags: allTags
   }
 }
@@ -400,11 +400,11 @@ module cosmosDb 'modules/cosmosDb.bicep' = if (cosmosDbEnabled) {
     name: 'cos${name}${resourceToken}'
     location: location
     networkIsolation: networkIsolation
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
     databases: cosmosDatabases
-    sqlRoleAssignmentsPrincipalIds: deploySampleApp ? [appIdentity!.outputs.principalId] : []
+    sqlRoleAssignmentsPrincipalIds: deploySampleApp ? [appIdentity.outputs.principalId] : []
     tags: allTags
   }
 }
@@ -418,8 +418,8 @@ module sqlServer 'modules/sqlServer.bicep' = if (sqlServerEnabled) {
     databases: sqlServerDatabases
     location: location
     networkIsolation: networkIsolation
-    virtualNetworkResourceId: networkIsolation ? network!.outputs.resourceId : ''
-    virtualNetworkSubnetResourceId: networkIsolation ? network!.outputs.defaultSubnetResourceId : ''
+    virtualNetworkResourceId: networkIsolation ? network.outputs.resourceId : ''
+    virtualNetworkSubnetResourceId: networkIsolation ? network.outputs.defaultSubnetResourceId : ''
     tags: allTags
   }
 }
@@ -429,7 +429,7 @@ module appService 'modules/appservice.bicep' = if (deploySampleApp) {
   params: {
     name: 'app-${name}${resourceToken}'
     location: location
-    userAssignedIdentityName: appIdentity!.outputs.name
+    userAssignedIdentityName: appIdentity.outputs.name
     appInsightsName: applicationInsights.outputs.name
     keyVaultName: keyvault.outputs.name
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspaceResourceId
@@ -437,18 +437,18 @@ module appService 'modules/appservice.bicep' = if (deploySampleApp) {
     skuCapacity: 1
     imagePath: 'sampleappaoaichatgpt.azurecr.io/sample-app-aoai-chatgpt'
     imageTag: '2025-02-13_52'
-    virtualNetworkSubnetId: networkIsolation ? network!.outputs.appSubnetResourceId : ''
+    virtualNetworkSubnetId: networkIsolation ? network.outputs.appSubnetResourceId : ''
     authProvider: {
       clientId: authClientId ?? ''
       clientSecretName: authClientSecretName
       openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
     }
     searchServiceConfiguration: {
-      name: aiSearch!.outputs.name
+      name: aiSearch.outputs.name
       indexName: 'ai_app_index'
     }
     cosmosDbConfiguration: {
-      account: cosmosDb!.outputs.cosmosDBname
+      account: cosmosDb.outputs.cosmosDBname
       database: cosmosDatabases[0].name 
       container: cosmosDatabases[0].?containers[0].?name ?? ''
     }
@@ -465,12 +465,12 @@ module appService 'modules/appservice.bicep' = if (deploySampleApp) {
 module appSample './modules/vmscriptsetup.bicep' = if (deploySampleApp) {
   name: 'app-sample-deployment'
   params: {
-    aiSearchName: searchEnabled ? aiSearch!.outputs.name : ''
+    aiSearchName: searchEnabled ? aiSearch.outputs.name : ''
     cognitiveServicesName: cognitiveServices.outputs.aiServicesName
     aiEmbeddingModelDeployment: aiEmbeddingModelDeployment
     networkIsolation: networkIsolation
-    virtualMachinePrincipalId: networkIsolation ? virtualMachine!.outputs.principalId : ''
-    vmName: networkIsolation ? virtualMachine!.outputs.name : ''
+    virtualMachinePrincipalId: networkIsolation ? virtualMachine.outputs.principalId : ''
+    vmName: networkIsolation ? virtualMachine.outputs.name : ''
   }
   dependsOn: [
     keyvault
@@ -479,26 +479,26 @@ module appSample './modules/vmscriptsetup.bicep' = if (deploySampleApp) {
 
 import { sqlDatabaseType, databasePropertyType, modelDeploymentType } from 'modules/customTypes.bicep'
 
-output AZURE_SEARCH_ENDPOINT string = searchEnabled ? 'https://${aiSearch!.outputs.name}.search.windows.net' : ''
+output AZURE_SEARCH_ENDPOINT string = searchEnabled ? 'https://${aiSearch.outputs.name}.search.windows.net' : ''
 output AZURE_OPENAI_ENDPOINT string = cognitiveServices.outputs.aiServicesEndpoint
 output EMBEDDING_MODEL_NAME string = aiEmbeddingModelDeployment.modelName
 output AZURE_KEY_VAULT_NAME string = keyvault.outputs.name
 output AZURE_AI_SERVICES_NAME string = cognitiveServices.outputs.aiServicesName
-output AZURE_AI_SEARCH_NAME string = searchEnabled ? aiSearch!.outputs.name : ''
+output AZURE_AI_SEARCH_NAME string = searchEnabled ? aiSearch.outputs.name : ''
 output AZURE_AI_HUB_NAME string = cognitiveServices.outputs.aiServicesName
 output AZURE_AI_PROJECT_NAME string = project.outputs.projectName
-output AZURE_BASTION_NAME string = networkIsolation ? network!.outputs.bastionName : ''
-output AZURE_VM_RESOURCE_ID string = networkIsolation ? virtualMachine!.outputs.id : ''
+output AZURE_BASTION_NAME string = networkIsolation ? network.outputs.bastionName : ''
+output AZURE_VM_RESOURCE_ID string = networkIsolation ? virtualMachine.outputs.id : ''
 output AZURE_VM_USERNAME string = servicesUsername
 output AZURE_APP_INSIGHTS_NAME string = applicationInsights.outputs.name
-output AZURE_CONTAINER_REGISTRY_NAME string = acrEnabled ? containerRegistry!.outputs.name : ''
-output AZURE_LOG_ANALYTICS_WORKSPACE_NAME string = useExistingLogAnalytics ? existingLogAnalyticsWorkspace!.name : logAnalyticsWorkspace!.outputs.name
+output AZURE_CONTAINER_REGISTRY_NAME string = acrEnabled ? containerRegistry.outputs.name : ''
+output AZURE_LOG_ANALYTICS_WORKSPACE_NAME string = useExistingLogAnalytics ? existingLogAnalyticsWorkspace.name : logAnalyticsWorkspace.outputs.name
 output AZURE_STORAGE_ACCOUNT_NAME string = storageAccount.outputs.storageName
-output AZURE_API_MANAGEMENT_NAME string = apiManagementEnabled ? apim!.outputs.name : ''
-output AZURE_VIRTUAL_NETWORK_NAME string = networkIsolation ?  network!.outputs.name : ''
-output AZURE_VIRTUAL_NETWORK_SUBNET_NAME string =networkIsolation ?  network!.outputs.defaultSubnetName : ''
-output AZURE_SQL_SERVER_NAME string = sqlServerEnabled ? sqlServer!.outputs.name : ''
+output AZURE_API_MANAGEMENT_NAME string = apiManagementEnabled ? apim.outputs.name : ''
+output AZURE_VIRTUAL_NETWORK_NAME string = networkIsolation ?  network.outputs.name : ''
+output AZURE_VIRTUAL_NETWORK_SUBNET_NAME string =networkIsolation ?  network.outputs.defaultSubnetName : ''
+output AZURE_SQL_SERVER_NAME string = sqlServerEnabled ? sqlServer.outputs.name : ''
 output AZURE_SQL_SERVER_USERNAME string = sqlServerEnabled ? servicesUsername : ''
-output AZURE_COSMOS_ACCOUNT_NAME string = cosmosDbEnabled ? cosmosDb!.outputs.cosmosDBname : ''
-output SAMPLE_APP_URL string = deploySampleApp ? appService!.outputs.uri : ''
+output AZURE_COSMOS_ACCOUNT_NAME string = cosmosDbEnabled ? cosmosDb.outputs.cosmosDBname : ''
+output SAMPLE_APP_URL string = deploySampleApp ? appService.outputs.uri : ''
 output AZURE_APP_SAMPLE_ENABLED bool = deploySampleApp

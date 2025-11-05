@@ -79,7 +79,7 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.17.0' = {
         privateDnsZoneGroup: {
           privateDnsZoneGroupConfigs: [
             {
-              privateDnsZoneResourceId: blobPrivateDnsZone.outputs.resourceId
+              privateDnsZoneResourceId: blobPrivateDnsZone!.outputs.resourceId
             }
           ]
         }
@@ -90,7 +90,7 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.17.0' = {
         privateDnsZoneGroup: {
           privateDnsZoneGroupConfigs: [
             {
-              privateDnsZoneResourceId: filePrivateDnsZone.outputs.resourceId
+              privateDnsZoneResourceId: filePrivateDnsZone!.outputs.resourceId
             }
           ]
         }

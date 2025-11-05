@@ -65,7 +65,7 @@ module containerRegistry 'br/public:avm/res/container-registry/registry:0.8.4' =
         privateDnsZoneGroup: {
           privateDnsZoneGroupConfigs: [
             {
-              privateDnsZoneResourceId: privateDnsZone.outputs.resourceId
+              privateDnsZoneResourceId: privateDnsZone!.outputs.resourceId
             }
           ]
         }

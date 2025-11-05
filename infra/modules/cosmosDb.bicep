@@ -50,6 +50,13 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.13.0' =  {
   params: {
     name: nameFormatted
     automaticFailover: true
+    locations: [
+      {
+        failoverPriority: 0
+        isZoneRedundant: false  // Disable zone redundancy to avoid capacity issues in high-demand regions
+        locationName: location
+      }
+    ]
     diagnosticSettings: [
       {
         workspaceResourceId: logAnalyticsWorkspaceResourceId
@@ -69,7 +76,7 @@ module cosmosDb 'br/public:avm/res/document-db/database-account:0.13.0' =  {
         privateDnsZoneGroup: {
           privateDnsZoneGroupConfigs: [
             {
-              privateDnsZoneResourceId: privateDnsZone.outputs.resourceId
+              privateDnsZoneResourceId: privateDnsZone!.outputs.resourceId
             }
           ]
         }

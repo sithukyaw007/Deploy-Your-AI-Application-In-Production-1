@@ -64,7 +64,7 @@ module sqlServer 'br/public:avm/res/sql/server:0.15.0' = {
         privateDnsZoneGroup: {
           privateDnsZoneGroupConfigs: [
             {
-              privateDnsZoneResourceId: privateDnsZone.outputs.resourceId
+              privateDnsZoneResourceId: privateDnsZone!.outputs.resourceId
             }
           ]
         }
